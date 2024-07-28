@@ -19,9 +19,12 @@ def get_html_beautiful_soup(url: str) -> BeautifulSoup:
 
 def get_img_urls(soup: BeautifulSoup) -> list:
     img_urls = []
-    raw_html_tag_img = soup.select('.reading-detail img')
+    raw_html_tag_img = soup.select('.reading-detail .page-chapter img ')
     for image in raw_html_tag_img:
-        img_urls.append(image['data-src'])
+        if 'data-src' in image.attrs:
+            img_urls.append(image['data-src'])
+        elif 'src' in image.attrs:  
+            img_urls.append(image['src'])
     return img_urls
 
 def format_string_to_router(txt: str) -> str:
@@ -53,13 +56,13 @@ def download_all_chapters(detail_chapters: list['DetailChapter'], name_manga: st
                 executor.submit(download_one_chapter, detail_chapter, session, name_manga)
 
 # Handle
-url = 'https://nettruyenviet.com/truyen-tranh/7-vien-ngoc-rong'
+url = 'https://nettruyenviet.com/truyen-tranh/ajin'
 
 
 
 link_chapters = []
 soup = get_html_beautiful_soup(url)
-chapters = soup.select('.list-chapter > nav li .chapter a ')
+chapters = soup.select('.list-chapter > nav #desc li .chapter a ')
 raw_name = soup.select_one('.title-detail').get_text()
 formated_name = format_string_to_router(raw_name)
 
